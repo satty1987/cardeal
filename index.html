@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoDeal IQ — Lease & Finance Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo-badge"><span class="dot"></span> DEAL ANALYZER v2.0</div>
+    <h1>AUTO<span>DEAL</span> IQ</h1>
+    <p class="subtitle">Instantly know if your car lease or finance offer is a great deal — or a rip-off.</p>
+  </header>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('lease')">🔄 Lease Analyzer</button>
+    <button class="tab-btn" onclick="switchTab('finance')">💳 Finance Analyzer</button>
+  </div>
+
+  <!-- ======================== LEASE PANEL ======================== -->
+  <div id="panel-lease" class="panel active">
+    <div class="card">
+      <div class="section-label">Vehicle Info</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>MSRP (Sticker Price)</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="l-msrp" placeholder="42000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Negotiated Selling Price</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="l-selling" placeholder="40000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Residual Value ($)</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="l-residual" placeholder="25000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Money Factor</label>
+          <div class="input-wrap">
+            <input type="number" id="l-mf" placeholder="0.00125" step="0.00001" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Lease Term (months)</label>
+          <div class="input-wrap">
+            <select id="l-term">
+              <option value="24">24 months</option>
+              <option value="36" selected>36 months</option>
+              <option value="39">39 months</option>
+              <option value="48">48 months</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Annual Mileage Allowance</label>
+          <div class="input-wrap">
+            <select id="l-miles">
+              <option value="10000">10,000 mi/yr</option>
+              <option value="12000" selected>12,000 mi/yr</option>
+              <option value="15000">15,000 mi/yr</option>
+              <option value="18000">18,000 mi/yr</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Down Payment (Cap Cost Reduction)</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="l-down" placeholder="0" min="0" value="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Monthly Payment</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="l-payment" placeholder="450" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Acquisition Fee</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="l-acqfee" placeholder="795" min="0" value="795">
+          </div>
+        </div>
+        <div class="field">
+          <label>Sales Tax Rate</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">%</span>
+            <input type="number" id="l-tax" placeholder="8.5" step="0.1" min="0" max="20">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="analyze-btn" onclick="analyzeLease()">⚡ ANALYZE THIS LEASE DEAL</button>
+
+    <div class="result-box" id="lease-result">
+      <div id="lease-verdict" class="verdict-banner"></div>
+
+      <div class="card">
+        <div class="section-label">Deal Score</div>
+        <div class="score-section">
+          <div class="score-ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#2a2a3a" stroke-width="10"/>
+              <circle id="l-score-ring" cx="60" cy="60" r="52" fill="none" stroke-width="10"
+                stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round"
+                style="transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)"/>
+            </svg>
+            <div class="score-number">
+              <span class="n" id="l-score-num">—</span>
+              <span class="label">/ 100</span>
+            </div>
+          </div>
+          <div class="score-breakdown" id="l-score-breakdown"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Key Metrics</div>
+        <div class="metrics-grid" id="l-metrics"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Breakdown & Tips</div>
+        <div class="tips-list" id="l-tips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== FINANCE PANEL ======================== -->
+  <div id="panel-finance" class="panel">
+    <div class="card">
+      <div class="section-label">Vehicle & Loan Info</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Vehicle Price (MSRP)</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="f-msrp" placeholder="42000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Negotiated Purchase Price</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="f-price" placeholder="39500" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Down Payment</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="f-down" placeholder="5000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Trade-In Value</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="f-tradein" placeholder="0" min="0" value="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Annual Interest Rate (APR)</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">%</span>
+            <input type="number" id="f-apr" placeholder="6.9" step="0.1" min="0" max="30">
+          </div>
+        </div>
+        <div class="field">
+          <label>Loan Term (months)</label>
+          <div class="input-wrap">
+            <select id="f-term">
+              <option value="24">24 months</option>
+              <option value="36">36 months</option>
+              <option value="48">48 months</option>
+              <option value="60" selected>60 months</option>
+              <option value="72">72 months</option>
+              <option value="84">84 months</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Monthly Payment</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="f-payment" placeholder="620" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Dealer Fees & Add-ons</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">$</span>
+            <input type="number" id="f-fees" placeholder="1500" min="0" value="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Sales Tax Rate</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">%</span>
+            <input type="number" id="f-tax" placeholder="8.5" step="0.1" min="0" max="20">
+          </div>
+        </div>
+        <div class="field">
+          <label>Your Credit Score (approx)</label>
+          <div class="input-wrap">
+            <select id="f-credit">
+              <option value="excellent">Excellent (750+)</option>
+              <option value="good" selected>Good (700–749)</option>
+              <option value="fair">Fair (650–699)</option>
+              <option value="poor">Poor (&lt;650)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="analyze-btn" onclick="analyzeFinance()">⚡ ANALYZE THIS FINANCE DEAL</button>
+
+    <div class="result-box" id="finance-result">
+      <div id="finance-verdict" class="verdict-banner"></div>
+
+      <div class="card">
+        <div class="section-label">Deal Score</div>
+        <div class="score-section">
+          <div class="score-ring-wrap">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#2a2a3a" stroke-width="10"/>
+              <circle id="f-score-ring" cx="60" cy="60" r="52" fill="none" stroke-width="10"
+                stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round"
+                style="transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)"/>
+            </svg>
+            <div class="score-number">
+              <span class="n" id="f-score-num">—</span>
+              <span class="label">/ 100</span>
+            </div>
+          </div>
+          <div class="score-breakdown" id="f-score-breakdown"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Key Metrics</div>
+        <div class="metrics-grid" id="f-metrics"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Breakdown & Tips</div>
+        <div class="tips-list" id="f-tips"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="./js/main.js"></script>
+</body>
+</html>
