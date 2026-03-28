@@ -17,7 +17,7 @@ AutoDeal IQ takes the numbers from a dealer's offer and runs them through a scor
 
 No installation, no build step, no dependencies.
 
-1. Download `car-deal-analyzer.html`
+1. Download the repo and open `index.html`
 2. Open it in any modern web browser (Chrome, Firefox, Safari, Edge)
 3. Enter your deal numbers and click **Analyze**
 
@@ -185,14 +185,6 @@ Color-coded actionable tips (green / orange / red) covering:
 
 ---
 
-## 📁 File Structure
-
-```
-car-deal-analyzer.html   ← Entire app (single file, ~400 lines)
-README.md                ← This file
-```
-
----
 
 ## 📄 License
 
